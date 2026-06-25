@@ -87,6 +87,12 @@
                 <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors hidden sm:flex">
                     <span class="material-symbols-outlined">settings</span>
                 </a>
+                <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
+                    @csrf
+                    <button type="submit" class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Log out">
+                        <span class="material-symbols-outlined">logout</span>
+                    </button>
+                </form>
                 <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant">
                     <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary text-xs font-bold border border-outline-variant">
                         {{ $initial }}
@@ -125,7 +131,14 @@
                         <span>Security Settings</span>
                     </a>
                 </nav>
-                <div class="mt-auto pt-lg border-t border-outline-variant">
+                <div class="mt-auto pt-lg border-t border-outline-variant space-y-xs">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Log Out</span>
+                        </button>
+                    </form>
                     <a href="{{ route('two-factor.create') }}" wire:navigate
                        class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-sm px-md rounded-xl hover:opacity-90 transition-opacity flex justify-center items-center gap-xs shadow-sm">
                         <span class="material-symbols-outlined text-[20px]">add</span>
