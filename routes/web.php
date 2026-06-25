@@ -1,0 +1,26 @@
+<?php
+
+use App\Http\Controllers\TwoFactorAccountController;
+use Illuminate\Support\Facades\Route;
+
+Route::view('/', 'welcome');
+
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::view('profile', 'profile')
+    ->middleware(['auth'])
+    ->name('profile');
+
+Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group(function () {
+    Route::get('/', [TwoFactorAccountController::class, 'index'])->name('index');
+    Route::get('/create', [TwoFactorAccountController::class, 'create'])->name('create');
+    Route::post('/', [TwoFactorAccountController::class, 'store'])->name('store');
+    Route::get('/{account}/code', [TwoFactorAccountController::class, 'getCode'])->name('code');
+    Route::delete('/{account}', [TwoFactorAccountController::class, 'destroy'])->name('destroy');
+    Route::post('/export', [TwoFactorAccountController::class, 'export'])->name('export');
+    Route::post('/import', [TwoFactorAccountController::class, 'import'])->name('import');
+});
+
+require __DIR__.'/auth.php';

@@ -1,0 +1,166 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\TwoFactorAccount;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use PragmaRX\Google2FA\Google2FA;
+
+class TwoFactorAccountController extends Controller
+{
+    private Google2FA $google2fa;
+
+    public function __construct()
+    {
+        $this->google2fa = new Google2FA();
+    }
+
+    public function index(Request $request)
+    {
+        $accounts = auth()->user()->twoFactorAccounts;
+
+        if ($search = $request->input('q')) {
+            $accounts = $accounts->filter(function ($account) use ($search) {
+                return str_contains(strtolower($account->label), strtolower($search))
+                    || str_contains(strtolower($account->issuer ?? ''), strtolower($search));
+            });
+        }
+
+        $codes = $accounts->mapWithKeys(function ($account) {
+            return [$account->id => $this->getCurrentCode($account->secret)];
+        });
+
+        return view('two-factor.index', compact('accounts', 'codes'));
+    }
+
+    public function create()
+    {
+        return view('two-factor.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'label' => 'required|string|max:255',
+            'issuer' => 'nullable|string|max:255',
+            'secret' => 'nullable|string|max:255',
+        ]);
+
+        $secret = $request->input('secret');
+
+        if (!empty($secret)) {
+            $secret = strtoupper(trim($secret));
+            $secret = preg_replace('/\s+/', '', $secret);
+        } else {
+            $secret = $this->google2fa->generateSecretKey();
+        }
+
+        $account = auth()->user()->twoFactorAccounts()->create([
+            'label' => $request->label,
+            'secret' => $secret,
+            'issuer' => $request->issuer,
+        ]);
+
+        if ($request->input('secret')) {
+            return redirect()->route('two-factor.index')
+                ->with('success', 'Account "' . $request->label . '" added successfully!');
+        }
+
+        $qrCodeUrl = $this->google2fa->getQRCodeUrl(
+            $request->issuer ?? config('app.name', 'Authenticator'),
+            $request->label,
+            $secret
+        );
+
+        return view('two-factor.show', compact('account', 'qrCodeUrl'));
+    }
+
+    public function getCode(Request $request, TwoFactorAccount $account): JsonResponse
+    {
+        if ($account->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $code = $this->getCurrentCode($account->secret);
+        $timestamp = time();
+        $remaining = 30 - ($timestamp % 30);
+
+        return response()->json([
+            'code' => $code,
+            'remaining' => $remaining,
+            'formatted' => substr($code, 0, 3) . ' ' . substr($code, 3),
+        ]);
+    }
+
+    public function destroy(TwoFactorAccount $account)
+    {
+        if ($account->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $account->delete();
+        return redirect()->route('two-factor.index')->with('success', 'Account deleted.');
+    }
+
+    public function export()
+    {
+        $accounts = auth()->user()->twoFactorAccounts->map(function ($account) {
+            return [
+                'label' => $account->label,
+                'issuer' => $account->issuer,
+                'secret' => $account->secret,
+            ];
+        });
+
+        $encrypted = Crypt::encryptString($accounts->toJson());
+
+        return response()->json([
+            'data' => $encrypted,
+            'filename' => 'authenticator-backup-' . now()->format('Y-m-d') . '.enc',
+            'count' => $accounts->count(),
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'backup_data' => 'required|string',
+        ]);
+
+        try {
+            $json = Crypt::decryptString($request->input('backup_data'));
+            $accounts = json_decode($json, true);
+
+            if (!is_array($accounts)) {
+                return back()->withErrors(['backup_data' => 'Invalid backup data.']);
+            }
+
+            $imported = 0;
+            foreach ($accounts as $account) {
+                if (empty($account['label']) || empty($account['secret'])) continue;
+
+                $secret = strtoupper(trim($account['secret']));
+                $secret = preg_replace('/\s+/', '', $secret);
+
+                auth()->user()->twoFactorAccounts()->create([
+                    'label' => $account['label'],
+                    'issuer' => $account['issuer'] ?? null,
+                    'secret' => $secret,
+                ]);
+                $imported++;
+            }
+
+            return redirect()->route('two-factor.index')
+                ->with('success', "Successfully imported {$imported} account(s)!");
+        } catch (\Exception $e) {
+            return back()->withErrors(['backup_data' => 'Failed to decrypt backup. The data may be corrupted or from a different app key.']);
+        }
+    }
+
+    private function getCurrentCode(string $secret): string
+    {
+        return $this->google2fa->getCurrentOtp($secret);
+    }
+}
