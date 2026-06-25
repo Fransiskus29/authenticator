@@ -241,12 +241,6 @@
             setTimeout(() => toast.classList.add('hidden'), 2000);
         }
 
-        function confirmDelete(id, name) {
-            document.getElementById('delete-name').textContent = name;
-            document.getElementById('delete-form').action = '{{ url("authenticator") }}/' + id;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        }
-
         function closeDeleteModal() {
             document.getElementById('delete-modal').classList.add('hidden');
         }
