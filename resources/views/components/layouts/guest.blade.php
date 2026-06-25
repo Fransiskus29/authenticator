@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#f8f9ff">
+    <meta name="theme-color" content="#f8f9ff" id="theme-color-meta">
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
@@ -12,7 +12,10 @@
         (function() {
             var t = localStorage.getItem('theme');
             var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
-            if (d) document.documentElement.classList.add('dark');
+            if (d) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-color-meta')?.setAttribute('content', '#161820');
+            }
         })();
     </script>
 

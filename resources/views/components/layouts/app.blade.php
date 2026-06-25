@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#f8f9ff">
+    <meta name="theme-color" content="#f8f9ff" id="theme-color-meta">
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
@@ -12,7 +12,10 @@
         (function() {
             var t = localStorage.getItem('theme');
             var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
-            if (d) document.documentElement.classList.add('dark');
+            if (d) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-color-meta')?.setAttribute('content', '#161820');
+            }
         })();
     </script>
 
@@ -28,6 +31,8 @@
         $user = auth()->user();
         $initial = strtoupper(substr($user->name ?? 'U', 0, 1));
     @endphp
+
+    {{-- Desktop sidebar --}}
     <aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col py-md px-sm z-20 hidden md:flex">
         <div class="mb-xl flex items-center gap-xs px-sm">
             <span class="material-symbols-outlined text-primary text-[32px] font-bold" style="font-variation-settings: 'FILL' 1;">shield</span>
@@ -58,33 +63,42 @@
             </a>
         </nav>
 
-        <div class="mt-auto pt-lg border-t border-outline-variant">
-            <a href="{{ route('two-factor.create') }}" wire:navigate
-               class="w-full bg-primary-container text-on-primary font-label-sm text-label-sm py-sm px-md rounded-xl hover:opacity-90 transition-opacity flex justify-center items-center gap-xs shadow-sm">
-                <span class="material-symbols-outlined text-[20px]">add</span>
-                <span>Add New Account</span>
-            </a>
+        <div class="mt-auto pt-lg border-t border-outline-variant space-y-sm">
+            <div class="flex items-center justify-between px-sm">
+                <div class="flex items-center gap-sm">
+                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
+                        {{ $initial }}
+                    </div>
+                    <span class="text-label-sm text-on-surface truncate max-w-[140px]">{{ $user->name ?? 'User' }}</span>
+                </div>
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Log Out</span>
+                </button>
+            </form>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col md:ml-[280px] w-full min-h-screen">
-        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface border-b border-outline-variant flex justify-between items-center px-sm sm:px-md z-10">
-            <div class="flex items-center">
-                <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden mr-xs text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
+        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface/80 backdrop-blur-lg border-b border-outline-variant flex justify-between items-center px-sm sm:px-md z-10">
+            <div class="flex items-center gap-xs">
+                <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
-                <h2 class="text-headline-md text-primary font-bold hidden md:block">Authenticator</h2>
-                <h2 class="text-headline-md text-primary font-bold md:hidden">SecureAuth</h2>
+                <h2 class="text-headline-md text-primary font-bold hidden sm:block">Authenticator</h2>
+                <h2 class="text-headline-md text-primary font-bold sm:hidden">SecureAuth</h2>
             </div>
-            <div class="flex items-center gap-1 sm:gap-xs">
+            <div class="flex items-center gap-xs">
                 <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
                     <span class="material-symbols-outlined">dark_mode</span>
                 </button>
-                <div class="relative focus-within:ring-2 focus-within:ring-primary rounded-full hidden lg:block">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-                    <input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-label-sm text-on-surface focus:outline-none w-64 placeholder-on-surface-variant" placeholder="Search accounts..." type="text"/>
-                </div>
-                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors hidden sm:flex">
+                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
                     <span class="material-symbols-outlined">settings</span>
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
@@ -94,16 +108,17 @@
                     </button>
                 </form>
                 <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant">
-                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary text-xs font-bold border border-outline-variant">
+                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
                         {{ $initial }}
                     </div>
                 </div>
             </div>
         </header>
 
+        {{-- Mobile sidebar --}}
         <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 md:hidden">
-            <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"></div>
-            <aside class="w-[280px] h-full bg-surface border-r border-outline-variant flex flex-col py-md px-sm relative z-10">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"></div>
+            <aside class="w-[280px] h-full bg-surface border-r border-outline-variant flex flex-col py-md px-sm relative z-10 animate-slide-up">
                 <div class="mb-xl flex items-center gap-xs px-sm">
                     <span class="material-symbols-outlined text-primary text-[32px] font-bold" style="font-variation-settings: 'FILL' 1;">shield</span>
                     <div>
@@ -131,7 +146,16 @@
                         <span>Security Settings</span>
                     </a>
                 </nav>
-                <div class="mt-auto pt-lg border-t border-outline-variant space-y-xs">
+                <div class="mt-auto pt-lg border-t border-outline-variant space-y-sm">
+                    <div class="flex items-center gap-sm px-sm mb-sm">
+                        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
+                            {{ $initial }}
+                        </div>
+                        <span class="text-label-sm text-on-surface">{{ $user->name ?? 'User' }}</span>
+                        <button onclick="toggleTheme()" class="theme-toggle ml-auto text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                            <span class="material-symbols-outlined">dark_mode</span>
+                        </button>
+                    </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container">
@@ -139,11 +163,6 @@
                             <span>Log Out</span>
                         </button>
                     </form>
-                    <a href="{{ route('two-factor.create') }}" wire:navigate
-                       class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-sm px-md rounded-xl hover:opacity-90 transition-opacity flex justify-center items-center gap-xs shadow-sm">
-                        <span class="material-symbols-outlined text-[20px]">add</span>
-                        <span>Add New Account</span>
-                    </a>
                 </div>
             </aside>
         </div>

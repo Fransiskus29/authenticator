@@ -7,9 +7,12 @@ function initTheme() {
 }
 
 function toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark');
+    const html = document.documentElement;
+    html.classList.add('theme-transition');
+    const isDark = html.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateToggleIcon(isDark);
+    setTimeout(() => html.classList.remove('theme-transition'), 300);
 }
 
 function updateToggleIcon(isDark) {
@@ -19,13 +22,13 @@ function updateToggleIcon(isDark) {
     });
 }
 
-window.initTheme = initTheme;
 window.toggleTheme = toggleTheme;
 
-initTheme();
-updateToggleIcon(document.documentElement.classList.contains('dark'));
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    updateToggleIcon(document.documentElement.classList.contains('dark'));
+});
 
-// Livewire wire:navigate doesn't fire DOMContentLoaded, so update on navigate
 document.addEventListener('livewire:navigated', () => {
     updateToggleIcon(document.documentElement.classList.contains('dark'));
 });
