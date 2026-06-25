@@ -60,4 +60,9 @@ new #[Layout('components.layouts.guest')] class extends Component
             </button>
         </div>
     </form>
+
+    <p class="mt-4 text-center text-sm text-on-surface-variant">
+        Don't have an account?
+        <a href="{{ route('register') }}" wire:navigate class="text-primary hover:underline font-medium">Register</a>
+    </p>
 </div>
