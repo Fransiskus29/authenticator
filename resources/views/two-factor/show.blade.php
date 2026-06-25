@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <div class="max-w-[800px] mx-auto">
         <header class="mb-lg">
             <h2 class="text-headline-lg text-on-surface mb-base">Setup Complete</h2>
@@ -83,4 +83,4 @@
             });
         }
     </script>
-</x-app-layout>
+</x-layouts.app>

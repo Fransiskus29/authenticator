@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <header class="mb-lg">
         <h2 class="text-headline-lg text-on-surface mb-base">Add New Account</h2>
         <p class="text-on-surface-variant">Securely connect a new service to generate one-time passwords.</p>
@@ -173,4 +173,4 @@
             }).catch(() => {});
         }
     </script>
-</x-app-layout>
+</x-layouts.app>

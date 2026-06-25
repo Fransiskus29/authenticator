@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <div class="mb-lg">
         <h2 class="text-headline-lg text-on-surface">Security Settings</h2>
         <p class="text-on-surface-variant mt-2 max-w-2xl">Manage your master password, multi-device access, and cloud backups. Maintaining these settings ensures your authenticator codes remain strictly under your control.</p>
@@ -115,4 +115,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>

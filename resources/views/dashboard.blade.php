@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <div class="flex justify-between items-end mb-lg">
         <div>
             <h2 class="text-headline-lg text-on-surface mb-base">Dashboard</h2>
@@ -46,4 +46,4 @@
             </a>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>

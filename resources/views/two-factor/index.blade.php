@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-sm mb-lg">
         <div>
             <h2 class="text-headline-lg text-on-surface mb-base">Your Accounts</h2>
@@ -281,4 +281,4 @@
             }
         });
     </script>
-</x-app-layout>
+</x-layouts.app>
