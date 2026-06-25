@@ -33,9 +33,9 @@
     @endphp
 
     {{-- Desktop sidebar --}}
-    <aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col py-md px-sm z-20 hidden md:flex">
-        <div class="mb-xl flex items-center gap-xs px-sm">
-            <span class="material-symbols-outlined text-primary text-[32px] font-bold" style="font-variation-settings: 'FILL' 1;">shield</span>
+    <aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface/80 backdrop-blur-xl border-r border-outline-variant/30 flex flex-col py-md px-sm z-20 hidden md:flex">
+        <div class="mb-xl flex items-center gap-xs px-sm group">
+            <span class="material-symbols-outlined text-primary text-[32px] font-bold transition-transform duration-300 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">shield</span>
             <div>
                 <h1 class="font-sans text-headline-md font-bold text-primary">SecureAuth</h1>
                 <p class="text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
@@ -43,42 +43,43 @@
         </div>
 
         <nav class="flex-1 space-y-xs">
-            <a href="{{ route('two-factor.index') }}" wire:navigate
-               class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                      {{ request()->routeIs('two-factor.index') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('two-factor.index') ? 'filled' : '' }}">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ route('two-factor.create') }}" wire:navigate
-               class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                      {{ request()->routeIs('two-factor.create') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('two-factor.create') ? 'filled' : '' }}">add_circle</span>
-                <span>Add Account</span>
-            </a>
-            <a href="{{ route('profile') }}" wire:navigate
-               class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                      {{ request()->routeIs('profile') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('profile') ? 'filled' : '' }}">security</span>
-                <span>Security Settings</span>
-            </a>
+            @php
+                $navItems = [
+                    ['route' => 'two-factor.index', 'icon' => 'dashboard', 'label' => 'Dashboard'],
+                    ['route' => 'two-factor.create', 'icon' => 'add_circle', 'label' => 'Add Account'],
+                    ['route' => 'profile', 'icon' => 'security', 'label' => 'Security Settings'],
+                ];
+            @endphp
+            @foreach ($navItems as $nav)
+                @php $active = request()->routeIs($nav['route']); @endphp
+                <a href="{{ route($nav['route']) }}" wire:navigate
+                   class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm relative group
+                          {{ $active ? 'bg-primary-container text-on-primary-container font-bold shadow-sm shadow-primary/10' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }}">
+                    @if ($active)
+                        <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full transition-all duration-300"></span>
+                    @endif
+                    <span class="material-symbols-outlined {{ $active ? 'filled' : '' }} transition-transform duration-200 group-hover:scale-110">{{ $nav['icon'] }}</span>
+                    <span>{{ $nav['label'] }}</span>
+                </a>
+            @endforeach
         </nav>
 
-        <div class="mt-auto pt-lg border-t border-outline-variant space-y-sm">
+        <div class="mt-auto pt-lg border-t border-outline-variant/30 space-y-sm">
             <div class="flex items-center justify-between px-sm">
-                <div class="flex items-center gap-sm">
-                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
+                <div class="flex items-center gap-sm min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold shrink-0 ring-2 ring-primary/20">
                         {{ $initial }}
                     </div>
                     <span class="text-label-sm text-on-surface truncate max-w-[140px]">{{ $user->name ?? 'User' }}</span>
                 </div>
-                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
                     <span class="material-symbols-outlined">dark_mode</span>
                 </button>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container">
-                    <span class="material-symbols-outlined">logout</span>
+                <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-error-container/30 hover:text-error group">
+                    <span class="material-symbols-outlined transition-transform duration-200 group-hover:scale-110">logout</span>
                     <span>Log Out</span>
                 </button>
             </form>
@@ -86,29 +87,29 @@
     </aside>
 
     <div class="flex-1 flex flex-col md:ml-[280px] w-full min-h-screen">
-        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] bg-surface/80 backdrop-blur-lg border-b border-outline-variant flex justify-between items-center px-sm sm:px-md z-10">
+        <header class="h-16 fixed top-0 right-0 w-full md:w-[calc(100%-280px)] glass border-b border-outline-variant/30 flex justify-between items-center px-sm sm:px-md z-10">
             <div class="flex items-center gap-xs">
-                <button onclick="document.getElementById('mobile-sidebar').classList.toggle('hidden')" class="md:hidden text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
+                <button onclick="document.getElementById('mobile-sidebar').classList.remove('hidden')" class="md:hidden text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <h2 class="text-headline-md text-primary font-bold hidden sm:block">Authenticator</h2>
                 <h2 class="text-headline-md text-primary font-bold sm:hidden">SecureAuth</h2>
             </div>
             <div class="flex items-center gap-xs">
-                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
                     <span class="material-symbols-outlined">dark_mode</span>
                 </button>
-                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors">
+                <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105">
                     <span class="material-symbols-outlined">settings</span>
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
                     @csrf
-                    <button type="submit" class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Log out">
+                    <button type="submit" class="text-on-surface-variant hover:bg-error-container/30 hover:text-error rounded-full p-2 transition-all duration-300 hover:scale-105" title="Log out">
                         <span class="material-symbols-outlined">logout</span>
                     </button>
                 </form>
-                <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant">
-                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
+                <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant/30">
+                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold ring-2 ring-primary/20">
                         {{ $initial }}
                     </div>
                 </div>
@@ -117,49 +118,43 @@
 
         {{-- Mobile sidebar --}}
         <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 md:hidden">
-            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"></div>
-            <aside class="w-[280px] h-full bg-surface border-r border-outline-variant flex flex-col py-md px-sm relative z-10 animate-slide-up">
-                <div class="mb-xl flex items-center gap-xs px-sm">
-                    <span class="material-symbols-outlined text-primary text-[32px] font-bold" style="font-variation-settings: 'FILL' 1;">shield</span>
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"></div>
+            <aside class="w-[280px] h-full bg-surface border-r border-outline-variant/30 flex flex-col py-md px-sm relative z-10 animate-nav-slide">
+                <div class="mb-xl flex items-center gap-xs px-sm group">
+                    <span class="material-symbols-outlined text-primary text-[32px] font-bold transition-transform duration-300 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">shield</span>
                     <div>
                         <h1 class="font-sans text-headline-md font-bold text-primary">SecureAuth</h1>
                         <p class="text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
                     </div>
                 </div>
                 <nav class="flex-1 space-y-xs">
-                    <a href="{{ route('two-factor.index') }}" wire:navigate onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"
-                       class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                              {{ request()->routeIs('two-factor.index') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                        <span class="material-symbols-outlined">dashboard</span>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="{{ route('two-factor.create') }}" wire:navigate onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"
-                       class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                              {{ request()->routeIs('two-factor.create') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                        <span class="material-symbols-outlined">add_circle</span>
-                        <span>Add Account</span>
-                    </a>
-                    <a href="{{ route('profile') }}" wire:navigate onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"
-                       class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm
-                              {{ request()->routeIs('profile') ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:bg-surface-container' }}">
-                        <span class="material-symbols-outlined">security</span>
-                        <span>Security Settings</span>
-                    </a>
+                    @foreach ($navItems as $nav)
+                        @php $active = request()->routeIs($nav['route']); @endphp
+                        <a href="{{ route($nav['route']) }}" wire:navigate onclick="document.getElementById('mobile-sidebar').classList.add('hidden')"
+                           class="flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm relative group
+                                  {{ $active ? 'bg-primary-container text-on-primary-container font-bold shadow-sm shadow-primary/10' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }}">
+                            @if ($active)
+                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full"></span>
+                            @endif
+                            <span class="material-symbols-outlined {{ $active ? 'filled' : '' }} transition-transform duration-200 group-hover:scale-110">{{ $nav['icon'] }}</span>
+                            <span>{{ $nav['label'] }}</span>
+                        </a>
+                    @endforeach
                 </nav>
-                <div class="mt-auto pt-lg border-t border-outline-variant space-y-sm">
+                <div class="mt-auto pt-lg border-t border-outline-variant/30 space-y-sm">
                     <div class="flex items-center gap-sm px-sm mb-sm">
-                        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">
+                        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold ring-2 ring-primary/20">
                             {{ $initial }}
                         </div>
                         <span class="text-label-sm text-on-surface">{{ $user->name ?? 'User' }}</span>
-                        <button onclick="toggleTheme()" class="theme-toggle ml-auto text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors" title="Toggle dark mode">
+                        <button onclick="toggleTheme()" class="theme-toggle ml-auto text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
                             <span class="material-symbols-outlined">dark_mode</span>
                         </button>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-surface-container">
-                            <span class="material-symbols-outlined">logout</span>
+                        <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-error-container/30 hover:text-error group">
+                            <span class="material-symbols-outlined transition-transform duration-200 group-hover:scale-110">logout</span>
                             <span>Log Out</span>
                         </button>
                     </form>
@@ -167,8 +162,9 @@
             </aside>
         </div>
 
-        <main class="flex-1 mt-16 p-sm sm:p-md md:p-lg overflow-y-auto bg-surface-bright">
-            <div class="max-w-container-max mx-auto">
+        <main class="flex-1 mt-16 p-sm sm:p-md md:p-lg overflow-y-auto bg-surface-bright relative">
+            <div class="absolute inset-0 dot-grid pointer-events-none"></div>
+            <div class="max-w-container-max mx-auto relative z-[1]">
                 {{ $slot }}
             </div>
         </main>

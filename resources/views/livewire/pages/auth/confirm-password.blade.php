@@ -30,21 +30,22 @@ new #[Layout('components.layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <div class="mb-4 text-sm text-on-surface-variant">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+    <div class="glass rounded-2xl p-lg shadow-xl shadow-black/5 dark:shadow-black/20 animate-fade-in-up" style="animation-delay: 0.25s;">
+        <h2 class="text-headline-md font-bold text-on-surface mb-xs">Confirm password</h2>
+        <p class="text-body-md text-on-surface-variant mb-md">{{ __('This is a secure area of the application. Please confirm your password before continuing.') }}</p>
+
+        <form wire:submit="confirmPassword" class="space-y-md">
+            <div>
+                <x-input-label for="password" :value="__('Password')" />
+                <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
+            </div>
+
+            <div class="flex justify-end">
+                <x-primary-button>
+                    {{ __('Confirm') }}
+                </x-primary-button>
+            </div>
+        </form>
     </div>
-
-    <form wire:submit="confirmPassword">
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input wire:model="password" id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
 </div>
