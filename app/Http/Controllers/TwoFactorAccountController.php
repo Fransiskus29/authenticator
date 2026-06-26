@@ -35,6 +35,13 @@ class TwoFactorAccountController extends Controller
         return view('two-factor.index', compact('accounts', 'codes'));
     }
 
+    public function archived()
+    {
+        $accounts = auth()->user()->twoFactorAccounts()->onlyTrashed()->get();
+
+        return view('two-factor.archived', compact('accounts'));
+    }
+
     public function create()
     {
         return view('two-factor.create');
@@ -100,8 +107,34 @@ class TwoFactorAccountController extends Controller
             abort(403);
         }
 
-        $account->delete();
-        return redirect()->route('two-factor.index')->with('success', 'Account deleted.');
+        $account->delete(); // Soft delete via SoftDeletes trait
+
+        return redirect()->route('two-factor.index')
+            ->with('success', '"' . $account->label . '" archived. It will be permanently deleted after 7 days.');
+    }
+
+    public function restore(TwoFactorAccount $account)
+    {
+        if ($account->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $account->restore();
+
+        return redirect()->route('two-factor.archived')
+            ->with('success', '"' . $account->label . '" has been restored.');
+    }
+
+    public function forceDelete(TwoFactorAccount $account)
+    {
+        if ($account->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $account->forceDelete();
+
+        return redirect()->route('two-factor.archived')
+            ->with('success', '"' . $account->label . '" has been permanently deleted.');
     }
 
     public function export()

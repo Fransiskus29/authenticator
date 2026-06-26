@@ -8,6 +8,9 @@
             </p>
         </div>
         <div class="flex items-center gap-xs">
+            <a href="{{ route('two-factor.archived') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Archived accounts">
+                <span class="material-symbols-outlined">archive</span>
+            </a>
             <button onclick="document.getElementById('import-modal').classList.remove('hidden')" class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Import">
                 <span class="material-symbols-outlined">upload</span>
             </button>
@@ -114,22 +117,22 @@
         @endforelse
     </div>
 
-    {{-- Delete Modal --}}
+    {{-- Archive Modal --}}
     <div id="delete-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-on-surface/50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
             <div class="bg-surface-container-lowest rounded-2xl max-w-sm w-full p-lg animate-scale-in border border-outline-variant/50 shadow-2xl shadow-black/10 dark:shadow-black/40">
                 <div class="w-14 h-14 bg-error-container/30 rounded-full flex items-center justify-center mx-auto mb-sm animate-pulse-glow">
-                    <span class="material-symbols-outlined text-error text-[28px]">warning</span>
+                    <span class="material-symbols-outlined text-error text-[28px]">archive</span>
                 </div>
-                <h3 class="text-headline-md text-on-surface text-center mb-xs">Delete Account?</h3>
-                <p class="text-body-md text-on-surface-variant text-center mb-md">Are you sure you want to delete <span id="delete-name" class="font-semibold text-on-surface"></span>?</p>
+                <h3 class="text-headline-md text-on-surface text-center mb-xs">Archive Account?</h3>
+                <p class="text-body-md text-on-surface-variant text-center mb-md">Move <span id="delete-name" class="font-semibold text-on-surface"></span> to trash? It will be permanently deleted after 7 days.</p>
                 <div class="flex gap-sm">
                     <button onclick="closeDeleteModal()" class="flex-1 py-2.5 text-label-sm font-label-sm text-on-surface-variant bg-surface-container-low border border-outline-variant/50 rounded-xl btn-press hover:bg-surface-container transition-all duration-200">Cancel</button>
                     <form id="delete-form" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-full py-2.5 text-label-sm font-label-sm text-on-error bg-error rounded-xl btn-press hover:opacity-90 transition-opacity shadow-sm shadow-error/20">Delete</button>
+                        <button type="submit" class="w-full py-2.5 text-label-sm font-label-sm text-on-error bg-error rounded-xl btn-press hover:opacity-90 transition-opacity shadow-sm shadow-error/20">Archive</button>
                     </form>
                 </div>
             </div>
