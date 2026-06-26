@@ -31,4 +31,26 @@ Route::get('/run-migrations', function () {
     ]);
 })->middleware('auth');
 
+// Debug: check DB connection and account counts (remove after debugging)
+Route::get('/debug-db', function () {
+    $user = auth()->user();
+    $dbConfig = config('database.default');
+    $dbHost = config("database.connections.{$dbConfig}.host", 'N/A');
+    $dbName = config("database.connections.{$dbConfig}.database", 'N/A');
+    $sessionDriver = config('session.driver');
+
+    $info = [
+        'user_id' => $user?->id,
+        'user_email' => $user?->email,
+        'db_driver' => $dbConfig,
+        'db_host' => $dbHost,
+        'db_name' => $dbName,
+        'session_driver' => $sessionDriver,
+        'accounts_count' => $user?->twoFactorAccounts()->count(),
+        'accounts' => $user?->twoFactorAccounts->map(fn($a) => ['id' => $a->id, 'label' => $a->label]),
+        'php_env' => app()->environment(),
+    ];
+    return response()->json($info);
+})->middleware('auth');
+
 require __DIR__.'/auth.php';
