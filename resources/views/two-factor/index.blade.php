@@ -176,7 +176,7 @@
 
         // Initialize timer state for each account
         accounts.forEach(a => {
-            timerState[a.id] = { remaining: 30, lastFetch: 0, code: '------', formatted: '--- ---' };
+            timerState[a.id] = { remaining: 30, lastFetch: 0, code: null, formatted: null, fetched: false };
         });
 
         // Fetch from server only when a new 30s cycle begins
@@ -190,6 +190,7 @@
                 timerState[account.id].code = data.code;
                 timerState[account.id].formatted = data.formatted;
                 timerState[account.id].lastFetch = Date.now();
+                timerState[account.id].fetched = true;
                 return data;
             })
             .catch(() => null);
@@ -198,7 +199,7 @@
         // Client-side countdown tick
         function tickTimer(account) {
             const state = timerState[account.id];
-            if (!state) return;
+            if (!state || !state.fetched) return; // wait for first fetch
 
             const elapsed = Math.floor((Date.now() - state.lastFetch) / 1000);
             state.remaining = Math.max(0, 30 - (elapsed % 30));
@@ -208,7 +209,7 @@
             const ringEl = document.getElementById('ring-' + account.id);
 
             if (timerEl) timerEl.textContent = state.remaining.toString().padStart(2, '0');
-            if (codeEl && codeEl.textContent.trim().replace(/\s/g, '') !== state.code) {
+            if (codeEl && state.formatted && codeEl.textContent.trim().replace(/\s/g, '') !== state.code) {
                 codeEl.textContent = state.formatted;
                 codeEl.classList.add('copy-flash');
                 setTimeout(() => codeEl.classList.remove('copy-flash'), 400);
@@ -242,12 +243,11 @@
 
         function copyCode(accountId) {
             const state = timerState[accountId];
-            if (!state) return;
-            const code = state.code;
-            navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard!'))
+            if (!state || !state.code) return;
+            navigator.clipboard.writeText(state.code).then(() => showToast('Code copied to clipboard!'))
             .catch(() => {
                 const ta = document.createElement('textarea');
-                ta.value = code;
+                ta.value = state.code;
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
