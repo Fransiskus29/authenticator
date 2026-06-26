@@ -153,7 +153,7 @@
                 </div>
                 <h3 class="text-headline-md text-on-surface text-center mb-xs">Import Backup</h3>
                 <p class="text-body-md text-on-surface-variant text-center mb-md">Paste your encrypted backup data below</p>
-                <form action="{{ route('two-factor.import') }}" method="POST">
+                <form action="/authenticator/import" method="POST">
                     @csrf
                     <div class="mb-md">
                         <textarea name="backup_data" rows="4" required
@@ -412,7 +412,7 @@
 
         // === Export ===
         function exportAccounts() {
-            fetch('{{ route("two-factor.export") }}', {
+            fetch('/authenticator/export', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',

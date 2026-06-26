@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="flex gap-sm pt-sm border-t border-outline-variant/30">
-                    <form action="{{ route('two-factor.restore', $account) }}" method="POST" class="flex-1">
+                    <form action="/authenticator/{{ $account->id }}/restore" method="POST" class="flex-1">
                         @csrf
                         <button type="submit"
                                 class="w-full bg-secondary/10 text-secondary text-label-sm font-label-sm px-sm py-2 rounded-xl btn-press hover:bg-secondary/20 transition-all duration-200 flex items-center justify-center gap-xs">
@@ -52,7 +52,7 @@
                             Restore
                         </button>
                     </form>
-                    <form action="{{ route('two-factor.force-delete', $account) }}" method="POST" class="flex-1" onsubmit="return confirm('Permanently delete {{ $account->label }}? This cannot be undone.')">
+                    <form action="/authenticator/{{ $account->id }}/force-delete" method="POST" class="flex-1" onsubmit="return confirm('Permanently delete {{ $account->label }}? This cannot be undone.')">
                         @csrf
                         @method('DELETE')
                         <button type="submit"

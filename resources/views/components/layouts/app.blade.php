@@ -149,7 +149,7 @@
                             <span class="material-symbols-outlined">dark_mode</span>
                         </button>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="/logout">
                         @csrf
                         <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-error-container/30 hover:text-error group">
                             <span class="material-symbols-outlined transition-transform duration-200 group-hover:scale-110">logout</span>

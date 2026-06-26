@@ -55,7 +55,7 @@
             </div>
             <p class="text-label-sm text-on-surface-variant mb-md">Enter the details provided by the service manually if you cannot scan a QR code.</p>
 
-            <form action="{{ route('two-factor.store') }}" method="POST" class="flex flex-col gap-md flex-1">
+            <form action="/authenticator" method="POST" class="flex flex-col gap-md flex-1">
                 @csrf
                 <div>
                     <label class="block text-on-surface mb-xs text-label-sm font-label-sm" for="account_name">Account Name</label>
