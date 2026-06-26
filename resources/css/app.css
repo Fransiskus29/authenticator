@@ -110,11 +110,12 @@
 
 /* ── Subtle dot grid pattern ── */
 .dot-grid {
-    background-image: radial-gradient(circle, rgb(var(--color-outline) / 0.12) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgb(var(--color-outline) / 0.2) 1px, transparent 1px);
     background-size: 24px 24px;
+    z-index: 0;
 }
 .dark .dot-grid {
-    background-image: radial-gradient(circle, rgb(var(--color-outline) / 0.08) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgb(var(--color-outline) / 0.15) 1px, transparent 1px);
 }
 
 /* ── Theme transition ── */
