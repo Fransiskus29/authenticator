@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('livewire:navigated', () => {
+    initTheme();
     updateToggleIcon(document.documentElement.classList.contains('dark'));
     initReveal();
 });

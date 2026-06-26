@@ -12,10 +12,8 @@
         (function() {
             var t = localStorage.getItem('theme');
             var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
-            if (d) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-color-meta')?.setAttribute('content', '#161820');
-            }
+            document.documentElement.classList.toggle('dark', d);
+            document.getElementById('theme-color-meta')?.setAttribute('content', d ? '#161820' : '#f8f9ff');
         })();
     </script>
 
@@ -59,7 +57,6 @@
     </style>
 </head>
 <body class="guest-bg min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 antialiased">
-    <div class="absolute inset-0 dot-grid pointer-events-none"></div>
     <div class="guest-orb guest-orb-1"></div>
     <div class="guest-orb guest-orb-2"></div>
 

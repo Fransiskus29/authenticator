@@ -12,10 +12,8 @@
         (function() {
             var t = localStorage.getItem('theme');
             var d = (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) || t === 'dark';
-            if (d) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-color-meta')?.setAttribute('content', '#161820');
-            }
+            document.documentElement.classList.toggle('dark', d);
+            document.getElementById('theme-color-meta')?.setAttribute('content', d ? '#161820' : '#f8f9ff');
         })();
     </script>
 
@@ -163,7 +161,6 @@
         </div>
 
         <main class="flex-1 mt-16 p-sm sm:p-md md:p-lg overflow-y-auto bg-surface-bright relative">
-            <div class="absolute inset-0 dot-grid pointer-events-none"></div>
             <div class="max-w-container-max mx-auto relative z-[1]">
                 {{ $slot }}
             </div>
