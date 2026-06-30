@@ -10,9 +10,9 @@ class TwoFactorAccount extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'user_id', 'label', 'secret', 'issuer', 'deleted_at',
-    ];
+    protected $fillable = ['user_id', 'label', 'secret', 'issuer'];
+
+    protected $casts = ['secret' => 'encrypted'];
 
     public function user(): BelongsTo
     {

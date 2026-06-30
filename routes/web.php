@@ -25,13 +25,16 @@ Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group
     Route::post('/import', [TwoFactorAccountController::class, 'import'])->name('import');
 });
 
-// Production migration route — run once after deploy
-Route::get('/run-migrations', function () {
+// Production migration route — run once after deploy.
+// Guarded by DEPLOY_TOKEN so only the deployer can trigger.
+Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
+    $token = env('DEPLOY_TOKEN');
+    abort_unless($token && hash_equals($token, (string) $request->query('token')), 403);
     Artisan::call('migrate', ['--force' => true]);
     return response()->json([
         'status' => 'ok',
         'output' => Artisan::output(),
     ]);
-})->middleware('auth');
+});
 
 require __DIR__.'/auth.php';

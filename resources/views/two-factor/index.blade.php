@@ -47,11 +47,14 @@
             <div class="swipe-container relative overflow-hidden rounded-2xl" data-account-id="{{ $account->id }}">
                 {{-- Archive action (revealed on swipe) --}}
                 <div class="absolute inset-0 flex items-center justify-end px-sm pointer-events-none">
-                    <button type="button" onclick="event.stopPropagation(); archiveAccount({{ $account->id }})"
-                            class="flex flex-col items-center justify-center gap-1 w-20 h-full rounded-2xl bg-error text-on-error pointer-events-auto btn-press">
-                        <span class="material-symbols-outlined text-[24px]">archive</span>
-                        <span class="text-[11px] font-medium">Archive</span>
-                    </button>
+                    <form action="/authenticator/{{ $account->id }}" method="POST" class="pointer-events-auto" onclick="event.stopPropagation()">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="flex flex-col items-center justify-center gap-1 w-20 h-full rounded-2xl bg-error text-on-error btn-press">
+                            <span class="material-symbols-outlined text-[24px]">archive</span>
+                            <span class="text-[11px] font-medium">Archive</span>
+                        </button>
+                    </form>
                 </div>
                 {{-- Card (swipeable) --}}
                 <div class="swipe-card bg-surface-container-lowest border border-outline-variant/50 rounded-2xl p-md card-hover glow-hover relative group cursor-pointer touch-pan-y"
