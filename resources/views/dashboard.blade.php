@@ -2,7 +2,7 @@
     <div class="flex justify-between items-end mb-lg animate-fade-in-up">
         <div>
             <h2 class="text-headline-lg text-on-surface mb-base">Dashboard</h2>
-            <p class="text-body-md text-on-surface-variant">Welcome back, <span class="font-medium text-on-surface">{{ auth()->user()->name }}</span></p>
+            <p class="text-body-md text-on-surface-variant">Welcome back, <span class="font-medium text-on-surface">{{ auth()->user()->name }}</span>.</p>
         </div>
     </div>
 
@@ -14,7 +14,7 @@
                 </div>
                 <h3 class="text-headline-md text-on-surface">Your 2FA Hub</h3>
             </div>
-            <p class="text-body-md text-on-surface-variant mb-md leading-relaxed">Manage all your two-factor authentication codes in one place.</p>
+            <p class="text-body-md text-on-surface-variant mb-md leading-relaxed">View and manage all your authentication codes from one place.</p>
             <a href="{{ route('two-factor.index') }}" wire:navigate
                class="bg-primary text-on-primary text-label-sm font-label-sm px-md py-sm rounded-xl btn-press hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 shadow-sm inline-flex items-center gap-xs">
                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -29,7 +29,7 @@
                 </div>
                 <h3 class="text-headline-md text-on-surface">Add Account</h3>
             </div>
-            <p class="text-body-md text-on-surface-variant mb-md leading-relaxed">Add a new service to generate authentication codes.</p>
+            <p class="text-body-md text-on-surface-variant mb-md leading-relaxed">Connect a new service to start generating codes.</p>
             <a href="{{ route('two-factor.create') }}" wire:navigate
                class="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-md py-sm rounded-xl btn-press hover:shadow-lg hover:shadow-primary/15 transition-all duration-300 shadow-sm inline-flex items-center gap-xs">
                 <span class="material-symbols-outlined text-[18px]">add</span>

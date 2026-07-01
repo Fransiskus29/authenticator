@@ -1,7 +1,7 @@
 <x-layouts.app>
     <header class="mb-lg animate-fade-in-up">
         <h2 class="text-headline-lg text-on-surface mb-base">Add New Account</h2>
-        <p class="text-on-surface-variant">Securely connect a new service to generate one-time passwords.</p>
+        <p class="text-on-surface-variant">Connect a service to start generating one-time passwords.</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-lg stagger-in">
@@ -88,6 +88,17 @@
                            placeholder="e.g. Google, GitHub, Discord"
                            class="w-full bg-surface-container-lowest/80 border border-outline-variant/50 rounded-xl px-sm py-3 text-body-md text-on-surface focus:outline-none input-glow transition-all duration-300 placeholder:text-on-surface-variant/50">
                     @error('issuer') <p class="text-error text-xs mt-1.5">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-on-surface mb-xs text-label-sm font-label-sm" for="category_id">Category</label>
+                    <select name="category_id" id="category_id"
+                            class="w-full bg-surface-container-lowest/80 border border-outline-variant/50 rounded-xl px-sm py-3 text-body-md text-on-surface focus:outline-none input-glow transition-all duration-300">
+                        <option value="">No category</option>
+                        @foreach(auth()->user()->categories as $cat)
+                            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="mt-auto pt-sm flex items-center justify-end gap-sm border-t border-outline-variant/30">

@@ -19,7 +19,7 @@ class TwoFactorAccountController extends Controller
 
     public function index(Request $request)
     {
-        $query = auth()->user()->twoFactorAccounts();
+        $query = auth()->user()->twoFactorAccounts()->with('category');
 
         if ($search = $request->input('q')) {
             $query->where(function ($q) use ($search) {
@@ -28,10 +28,15 @@ class TwoFactorAccountController extends Controller
             });
         }
 
+        if ($categoryId = $request->input('category')) {
+            $query->where('category_id', $categoryId);
+        }
+
         $accounts = $query->get();
         $accountIds = $accounts->pluck('id');
+        $categories = auth()->user()->categories()->withCount('accounts')->get();
 
-        return view('two-factor.index', compact('accounts', 'accountIds'));
+        return view('two-factor.index', compact('accounts', 'accountIds', 'categories'));
     }
 
     public function archived()
@@ -52,6 +57,7 @@ class TwoFactorAccountController extends Controller
             'label' => 'required|string|max:255',
             'issuer' => 'nullable|string|max:255',
             'secret' => 'nullable|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ]);
 
         $secret = $request->input('secret');
@@ -74,6 +80,7 @@ class TwoFactorAccountController extends Controller
             'label' => $request->label,
             'secret' => $secret,
             'issuer' => $request->issuer,
+            'category_id' => $request->category_id,
         ]);
 
         if ($request->input('secret')) {

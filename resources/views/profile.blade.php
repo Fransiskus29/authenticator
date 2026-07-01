@@ -1,7 +1,7 @@
 <x-layouts.app>
     <div class="mb-lg animate-fade-in-up">
         <h2 class="text-headline-lg text-on-surface">Security Settings</h2>
-        <p class="text-on-surface-variant mt-2 max-w-2xl">Manage your master password, multi-device access, and cloud backups. Maintaining these settings ensures your authenticator codes remain strictly under your control.</p>
+        <p class="text-on-surface-variant mt-2 max-w-2xl">Manage your password, browser extensions, and connected devices. Keep your authenticator locked down.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
@@ -113,6 +113,97 @@
                     </li>
                 </ul>
             </div>
+
+            {{-- API Token for Browser Extension --}}
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/50 p-md">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-11 h-11 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+                        <span class="material-symbols-outlined">extension</span>
+                    </div>
+                    <div>
+                        <h3 class="text-body-md font-semibold text-on-surface">Browser Extension</h3>
+                        <p class="text-label-sm text-on-surface-variant">Connect Chrome or Firefox for quick access</p>
+                    </div>
+                </div>
+                <div id="token-section">
+                    @if (auth()->user()->api_token)
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2 text-secondary text-label-sm bg-secondary-container/20 px-3 py-2.5 rounded-xl border border-secondary-container/50">
+                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                Extension connected
+                            </div>
+                            <button onclick="revokeToken()" class="w-full px-4 py-2.5 text-error text-label-sm font-label-sm hover:bg-error-container/20 rounded-xl transition-all duration-200 text-left btn-press">
+                                Disconnect Extension
+                            </button>
+                        </div>
+                    @else
+                        <button onclick="generateToken()" class="w-full px-4 py-2.5 text-primary text-label-sm font-label-sm hover:bg-primary-container/20 rounded-xl transition-all duration-200 text-left flex justify-between items-center btn-press">
+                            Generate Connection Token
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        const csrfToken = '{{ csrf_token() }}';
+
+        async function generateToken() {
+            const res = await fetch('/authenticator/api-token', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const section = document.getElementById('token-section');
+                section.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/50">
+                            <p class="text-label-sm text-on-surface-variant mb-2">Your extension token:</p>
+                            <div class="flex items-center gap-2">
+                                <code class="flex-1 text-xs font-mono text-on-surface bg-surface-container-lowest/80 px-2 py-1.5 rounded-lg break-all">${data.token}</code>
+                                <button onclick="copyToken('${data.token}')" class="shrink-0 text-on-surface-variant hover:text-primary p-1 rounded-lg hover:bg-surface-container-low transition-all">
+                                    <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-error mt-2">Copy this now — it won't be shown again.</p>
+                        </div>
+                        <button onclick="location.reload()" class="w-full px-4 py-2.5 text-primary text-label-sm font-label-sm hover:bg-primary-container/20 rounded-xl transition-all duration-200 text-left btn-press">
+                            Done
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function revokeToken() {
+            if (!confirm('This will disconnect your browser extension. Continue?')) return;
+
+            const res = await fetch('/authenticator/api-token', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (res.ok) location.reload();
+        }
+
+        function copyToken(token) {
+            navigator.clipboard.writeText(token).then(() => {
+                const btn = event.target.closest('button');
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-secondary">check</span>';
+                setTimeout(() => btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">content_copy</span>', 1500);
+            });
+        }
+    </script>
 </x-layouts.app>

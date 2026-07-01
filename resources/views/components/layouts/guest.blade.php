@@ -78,7 +78,7 @@
             <span class="material-symbols-outlined text-primary text-[40px] font-bold transition-transform duration-300 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">shield</span>
             <div>
                 <h1 class="font-sans text-headline-md font-bold text-primary">SecureAuth</h1>
-                <p class="text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
+                <p class="text-label-sm text-on-surface-variant">Your codes, your control</p>
             </div>
         </a>
     </div>

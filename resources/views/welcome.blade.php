@@ -3,8 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="SecureAuth — TOTP authenticator for managing your two-factor authentication codes.">
+    <meta name="description" content="SecureAuth — A clean, self-hosted authenticator for your two-factor authentication codes.">
     <meta name="theme-color" content="#f8f9ff">
+    <link rel="manifest" href="/manifest.json">
 
     <title>{{ config('app.name', 'SecureAuth') }}</title>
 
@@ -95,27 +96,27 @@
         <div class="max-w-container-max mx-auto text-center relative z-10">
             <div class="inline-flex items-center gap-xs bg-primary-fixed/60 text-on-primary-fixed text-label-sm font-medium px-sm py-1.5 rounded-full mb-md animate-fade-in-up" style="animation-delay: 0.1s;">
                 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
-                TOTP Authenticator
+                Two-factor authentication, simplified
             </div>
 
             <h1 class="text-headline-lg sm:text-[clamp(2.5rem,5vw,4rem)] sm:leading-[clamp(3rem,6vw,4.75rem)] font-bold text-on-background max-w-3xl mx-auto animate-fade-in-up" style="text-wrap: balance; animation-delay: 0.2s;">
-                Your 2FA codes,<br class="hidden sm:block"> one secure place.
+                Every code you need,<br class="hidden sm:block"> in one place.
             </h1>
 
             <p class="mt-md text-body-md sm:text-lg text-on-surface-variant max-w-xl mx-auto animate-fade-in-up" style="text-wrap: balance; animation-delay: 0.3s;">
-                Generate time-based one-time passwords for all your accounts. No cloud sync, no vendor lock-in — your secrets stay on your device.
+                A straightforward authenticator for generating time-based codes. Your secrets stay with you — no third-party sync, no vendor lock-in.
             </p>
 
             <div class="mt-lg flex flex-col sm:flex-row items-center justify-center gap-sm animate-fade-in-up" style="animation-delay: 0.4s;">
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" wire:navigate class="w-full sm:w-auto inline-flex items-center justify-center gap-xs px-lg py-sm bg-primary text-on-primary rounded-lg font-label-sm text-label-sm tracking-wide btn-press hover:shadow-xl hover:shadow-primary/25 transition-all duration-300">
                         <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
-                        Start for free
+                        Create your account
                     </a>
                 @endif
                 @if (Route::has('login'))
                     <a href="{{ route('login') }}" wire:navigate class="w-full sm:w-auto inline-flex items-center justify-center gap-xs px-lg py-sm bg-surface-container-low/80 text-on-surface border border-outline-variant rounded-lg font-label-sm text-label-sm tracking-wide btn-press hover:bg-surface-container hover:border-primary/30 transition-all duration-300">
-                        I already have an account
+                        Sign in
                     </a>
                 @endif
             </div>
@@ -127,19 +128,19 @@
         <div class="absolute inset-0 dot-grid pointer-events-none"></div>
         <div class="max-w-container-max mx-auto relative z-[1]">
             <div class="text-center mb-xl reveal">
-                <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-background" style="text-wrap: balance;">Everything you need,<br class="hidden sm:block"> nothing you don't.</h2>
-                <p class="mt-sm text-body-md text-on-surface-variant max-w-lg mx-auto">Built for people who take security seriously but don't want the friction.</p>
+                <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-background" style="text-wrap: balance;">What you get.</h2>
+                <p class="mt-sm text-body-md text-on-surface-variant max-w-lg mx-auto">The essentials, done well. Nothing more, nothing less.</p>
             </div>
 
             <div class="grid gap-md sm:grid-cols-2 lg:grid-cols-3 stagger-in">
                 @php
                     $features = [
-                        ['icon' => 'pin', 'color' => 'primary', 'title' => 'Live TOTP Codes', 'desc' => 'Real-time code generation with visible countdown. Your codes refresh every 30 seconds, always in sync.'],
-                        ['icon' => 'search', 'color' => 'secondary', 'title' => 'Instant Search', 'desc' => 'Find any account in milliseconds. Search by name or issuer — no scrolling through endless lists.'],
-                        ['icon' => 'lock', 'color' => 'tertiary', 'title' => 'Encrypted Export', 'desc' => 'Export your accounts encrypted. Move between devices without exposing your secrets in plaintext.'],
-                        ['icon' => 'qr_code_scanner', 'color' => 'primary', 'title' => 'Easy Setup', 'desc' => 'Add accounts with a label and secret key. Works with any service that supports TOTP — Google, GitHub, Slack, and more.'],
-                        ['icon' => 'download', 'color' => 'secondary', 'title' => 'Import Accounts', 'desc' => 'Migrating from another authenticator? Import your existing accounts in one step.'],
-                        ['icon' => 'phonelink_off', 'color' => 'tertiary', 'title' => 'No Cloud Dependency', 'desc' => 'Your data lives on this server, under your control. No third-party sync, no surprise lockouts.'],
+                        ['icon' => 'pin', 'color' => 'primary', 'title' => 'Live codes', 'desc' => 'Time-based one-time passwords with a visible countdown. Codes refresh every 30 seconds, automatically.'],
+                        ['icon' => 'search', 'color' => 'secondary', 'title' => 'Quick search', 'desc' => 'Find any account by name or issuer instantly — no scrolling through a long list.'],
+                        ['icon' => 'folder_open', 'color' => 'tertiary', 'title' => 'Categories', 'desc' => 'Group accounts by purpose. Keep work, personal, and shared credentials separate at a glance.'],
+                        ['icon' => 'lock', 'color' => 'primary', 'title' => 'Encrypted backup', 'desc' => 'Export your accounts as an encrypted file. Move to a new device without exposing your secrets.'],
+                        ['icon' => 'extension', 'color' => 'secondary', 'title' => 'Browser extension', 'desc' => 'Access your codes from Chrome or Firefox without leaving the page you\'re on.'],
+                        ['icon' => 'phonelink_off', 'color' => 'tertiary', 'title' => 'Your data, your server', 'desc' => 'Self-hosted on your own infrastructure. No surprise lockouts, no data sharing with third parties.'],
                     ];
                 @endphp
                 @foreach ($features as $f)
@@ -160,8 +161,8 @@
         <div class="max-w-container-max mx-auto">
             <div class="grid lg:grid-cols-2 gap-xl items-center">
                 <div class="reveal">
-                    <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-background" style="text-wrap: balance;">Codes at a glance.</h2>
-                    <p class="mt-sm text-body-md text-on-surface-variant max-w-md" style="text-wrap: pretty;">See all your OTP codes on one screen. The countdown timer shows exactly how long each code stays valid — no guessing, no rushing.</p>
+                    <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-background" style="text-wrap: balance;">See every code at once.</h2>
+                    <p class="mt-sm text-body-md text-on-surface-variant max-w-md" style="text-wrap: pretty;">A clean dashboard shows all your active codes, how long each one lasts, and which account it belongs to. No digging through menus.</p>
                     <div class="mt-md space-y-xs">
                         @foreach (['30-second refresh cycle', 'Standard TOTP (RFC 6238)', 'Works with any TOTP provider'] as $check)
                             <div class="flex items-center gap-sm text-label-sm text-on-surface-variant">
@@ -216,8 +217,8 @@
             <div class="bg-primary-container rounded-3xl px-md py-xl sm:px-xl relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none"></div>
                 <span class="material-symbols-outlined text-on-primary-container text-[48px] mb-sm block relative z-10 animate-float-slow" style="font-variation-settings: 'FILL' 1;">shield</span>
-                <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-primary-container relative z-10" style="text-wrap: balance;">Secure your accounts today.</h2>
-                <p class="mt-sm text-body-md text-on-primary-container/80 max-w-md mx-auto relative z-10" style="text-wrap: pretty;">Set up two-factor authentication in minutes. Free, self-hosted, and under your control.</p>
+                <h2 class="text-headline-md sm:text-headline-lg font-bold text-on-primary-container relative z-10" style="text-wrap: balance;">Ready to get started?</h2>
+                <p class="mt-sm text-body-md text-on-primary-container/80 max-w-md mx-auto relative z-10" style="text-wrap: pretty;">Set up your first account in under a minute. Free to use, and you own your data.</p>
                 <div class="mt-md flex flex-col sm:flex-row items-center justify-center gap-sm relative z-10">
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" wire:navigate class="w-full sm:w-auto inline-flex items-center justify-center gap-xs px-lg py-sm bg-primary text-on-primary rounded-lg font-label-sm text-label-sm tracking-wide btn-press hover:shadow-xl hover:shadow-primary/25 transition-all duration-300">
@@ -235,10 +236,8 @@
             <div class="flex items-center gap-xs">
                 <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">shield</span>
                 <span class="font-medium text-on-surface">SecureAuth</span>
-                <span class="text-outline">·</span>
-                <span>Vigilant &amp; Precise</span>
             </div>
-            <p>Built with Laravel + Livewire</p>
+            <p>Self-hosted. Open source. Your data stays yours.</p>
         </div>
     </footer>
 

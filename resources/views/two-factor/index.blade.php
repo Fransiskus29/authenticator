@@ -4,7 +4,7 @@
             <h2 class="text-headline-lg text-on-surface mb-base">Your Accounts</h2>
             <p class="text-body-md text-on-surface-variant flex items-center gap-base">
                 <span class="material-symbols-outlined text-[16px] text-secondary">lock</span>
-                <span>All tokens are end-to-end encrypted</span>
+                <span>Secrets encrypted at rest</span>
             </p>
         </div>
         <div class="flex items-center gap-xs">
@@ -38,7 +38,33 @@
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </a>
             @endif
+            <input type="hidden" name="category" value="{{ request('category') }}">
         </form>
+    @endif
+
+    @if ($categories->isNotEmpty())
+        <div class="flex flex-wrap gap-xs mb-md animate-fade-in-up" style="animation-delay: 0.15s;">
+            <a href="{{ route('two-factor.index', ['q' => request('q')]) }}"
+               class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 {{ !request('category') ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container' }}">
+                All <span class="ml-0.5 opacity-70">{{ $accounts->count() }}</span>
+            </a>
+            @foreach ($categories as $cat)
+                <a href="{{ route('two-factor.index', ['category' => $cat->id, 'q' => request('q')]) }}"
+                   class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 {{ request('category') == $cat->id ? 'text-on-primary' : 'text-on-surface-variant hover:bg-surface-container' }}"
+                   style="background-color: {{ request('category') == $cat->id ? $cat->color : 'var(--surface-container-low, #f3f3f3)' }}; color: {{ request('category') == $cat->id ? 'white' : 'inherit' }};">
+                    {{ $cat->name }} <span class="ml-0.5 opacity-70">{{ $cat->accounts_count }}</span>
+                </a>
+            @endforeach
+            <button onclick="openCategoryManager()" class="px-3 py-1.5 rounded-full text-xs font-medium bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-all duration-200">
+                <span class="material-symbols-outlined text-[14px] align-middle">edit</span>
+            </button>
+        </div>
+    @else
+        <div class="mb-md animate-fade-in-up" style="animation-delay: 0.15s;">
+            <button onclick="openCategoryManager()" class="px-3 py-1.5 rounded-full text-xs font-medium bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-all duration-200">
+                <span class="material-symbols-outlined text-[14px] align-middle">add</span> Add categories to organize accounts
+            </button>
+        </div>
     @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-sm stagger-in" id="accounts-list">
@@ -176,6 +202,31 @@
     <div id="toast" class="fixed bottom-lg right-lg bg-inverse-surface text-inverse-on-surface px-md py-xs rounded-xl shadow-xl shadow-black/15 flex items-center gap-xs text-label-sm font-label-sm z-50 hidden">
         <span class="material-symbols-outlined text-secondary-fixed text-[20px]">check_circle</span>
         <span id="toast-text">Done!</span>
+    </div>
+
+    {{-- Category Manager Modal --}}
+    <div id="category-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-on-surface/50 backdrop-bl-sm" onclick="closeCategoryManager()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-lg animate-scale-in border border-outline-variant/50 shadow-2xl shadow-black/10 dark:shadow-black/40 max-h-[80vh] flex flex-col">
+                <h3 class="text-headline-md text-on-surface mb-md">Manage Categories</h3>
+
+                {{-- Add new category --}}
+                <div class="flex gap-sm mb-md">
+                    <input type="text" id="new-cat-name" placeholder="Category name" maxlength="50"
+                           class="flex-1 bg-surface-container-low/80 border border-outline-variant/50 rounded-xl px-sm py-2.5 text-body-sm text-on-surface focus:outline-none input-glow">
+                    <input type="color" id="new-cat-color" value="#6750A4" class="w-10 h-10 rounded-xl border border-outline-variant/50 cursor-pointer bg-transparent">
+                    <button onclick="createCategory()" class="bg-primary text-on-primary px-sm py-2 rounded-xl btn-press text-sm font-medium">Add</button>
+                </div>
+
+                {{-- Category list --}}
+                <div id="category-list" class="flex-1 overflow-y-auto space-y-xs"></div>
+
+                <div class="mt-md pt-sm border-t border-outline-variant/30 flex justify-end">
+                    <button onclick="closeCategoryManager()" class="text-label-sm text-on-surface-variant hover:text-on-surface px-md py-2 rounded-xl transition-colors btn-press">Done</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -416,6 +467,75 @@
             document.getElementById('toast-text').textContent = text;
             t.classList.remove('hidden');
             setTimeout(() => t.classList.add('hidden'), 2000);
+        }
+
+        // === Category Manager ===
+        const csrfToken = '{{ csrf_token() }}';
+
+        function openCategoryManager() {
+            document.getElementById('category-modal').classList.remove('hidden');
+            loadCategories();
+        }
+
+        function closeCategoryManager() {
+            document.getElementById('category-modal').classList.add('hidden');
+        }
+
+        async function loadCategories() {
+            const res = await fetch('/authenticator/categories', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+            const cats = await res.json();
+            const list = document.getElementById('category-list');
+            list.innerHTML = cats.length ? cats.map(c => `
+                <div class="flex items-center gap-sm py-2 px-3 rounded-xl bg-surface-container-low/50 group">
+                    <div class="w-4 h-4 rounded-full border border-outline-variant/50" style="background-color: ${c.color}"></div>
+                    <span class="flex-1 text-sm text-on-surface truncate">${c.name}</span>
+                    <span class="text-xs text-on-surface-variant">${c.accounts_count} accounts</span>
+                    <button onclick="deleteCategory(${c.id})" class="opacity-0 group-hover:opacity-100 text-error hover:bg-error/10 rounded-full p-1 transition-all duration-200">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                    </button>
+                </div>
+            `).join('') : '<p class="text-sm text-on-surface-variant text-center py-4">No categories yet</p>';
+        }
+
+        async function createCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            const color = document.getElementById('new-cat-color').value;
+            if (!name) return;
+
+            const res = await fetch('/authenticator/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ name, color }),
+            });
+
+            if (res.ok) {
+                document.getElementById('new-cat-name').value = '';
+                loadCategories();
+                showToast('Category created');
+            }
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('Delete this category? Accounts will be unassigned.')) return;
+
+            const res = await fetch('/authenticator/categories/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (res.ok) {
+                loadCategories();
+                showToast('Category deleted');
+            }
         }
     </script>
 </x-layouts.app>

@@ -22,6 +22,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
+    {{-- PWA --}}
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-on-background font-sans text-body-md min-h-screen antialiased flex">
@@ -36,7 +40,7 @@
             <span class="material-symbols-outlined text-primary text-[32px] font-bold transition-transform duration-300 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">shield</span>
             <div>
                 <h1 class="font-sans text-headline-md font-bold text-primary">SecureAuth</h1>
-                <p class="text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
+                <p class="text-label-sm text-on-surface-variant">Your codes, your control</p>
             </div>
         </div>
 
@@ -122,7 +126,7 @@
                     <span class="material-symbols-outlined text-primary text-[32px] font-bold transition-transform duration-300 group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">shield</span>
                     <div>
                         <h1 class="font-sans text-headline-md font-bold text-primary">SecureAuth</h1>
-                        <p class="text-label-sm text-on-surface-variant">Vigilant &amp; Precise</p>
+                        <p class="text-label-sm text-on-surface-variant">Your codes, your control</p>
                     </div>
                 </div>
                 <nav class="flex-1 space-y-xs">
@@ -166,5 +170,11 @@
             </div>
         </main>
     </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => null);
+        }
+    </script>
 </body>
 </html>

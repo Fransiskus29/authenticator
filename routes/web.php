@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\TwoFactorAccountController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Api\CodesController;
+use App\Http\Controllers\Api\TokenController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +26,21 @@ Route::middleware(['auth'])->prefix('authenticator')->name('two-factor.')->group
     Route::delete('/{account}/force-delete', [TwoFactorAccountController::class, 'forceDelete'])->name('force-delete')->withTrashed();
     Route::post('/export', [TwoFactorAccountController::class, 'export'])->name('export');
     Route::post('/import', [TwoFactorAccountController::class, 'import'])->name('import');
+
+    // Categories (JSON API for inline management)
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    // API token management
+    Route::post('/api-token', [TokenController::class, 'generate'])->name('api-token.generate');
+    Route::delete('/api-token', [TokenController::class, 'revoke'])->name('api-token.revoke');
+});
+
+// Public API (bearer token auth)
+Route::middleware('throttle:60,1')->prefix('api')->group(function () {
+    Route::get('/codes', [CodesController::class, 'index'])->name('api.codes');
 });
 
 // Production migration route — run once after deploy.
