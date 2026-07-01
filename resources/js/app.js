@@ -3,6 +3,7 @@ function initTheme() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = stored || (prefersDark ? 'dark' : 'light');
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    updateMetaThemeColor(theme === 'dark');
     return theme;
 }
 
@@ -12,6 +13,7 @@ function toggleTheme() {
     const isDark = html.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateToggleIcon(isDark);
+    updateMetaThemeColor(isDark);
     setTimeout(() => html.classList.remove('theme-transition'), 300);
 }
 
@@ -20,6 +22,11 @@ function updateToggleIcon(isDark) {
         const icon = btn.querySelector('.material-symbols-outlined');
         if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
     });
+}
+
+function updateMetaThemeColor(isDark) {
+    const meta = document.getElementById('theme-color-meta');
+    if (meta) meta.setAttribute('content', isDark ? '#161820' : '#f8f9ff');
 }
 
 // Scroll reveal observer

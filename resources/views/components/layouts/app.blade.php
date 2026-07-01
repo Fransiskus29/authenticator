@@ -30,10 +30,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-on-background font-sans text-body-md min-h-screen antialiased flex">
-    @php
-        $user = auth()->user();
-        $initial = strtoupper(substr($user->name ?? 'U', 0, 1));
-    @endphp
 
     {{-- Desktop sidebar --}}
     <aside class="w-[280px] h-screen fixed left-0 top-0 bg-surface/80 backdrop-blur-xl border-r border-outline-variant/30 flex flex-col py-md px-sm z-20 hidden md:flex">
@@ -68,17 +64,6 @@
         </nav>
 
         <div class="mt-auto pt-lg border-t border-outline-variant/30 space-y-sm">
-            <div class="flex items-center justify-between px-sm">
-                <div class="flex items-center gap-sm min-w-0">
-                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold shrink-0 ring-2 ring-primary/20">
-                        {{ $initial }}
-                    </div>
-                    <span class="text-label-sm text-on-surface truncate max-w-[140px]">{{ $user->name ?? 'User' }}</span>
-                </div>
-                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
-                    <span class="material-symbols-outlined">dark_mode</span>
-                </button>
-            </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-error-container/30 hover:text-error group">
@@ -99,8 +84,8 @@
                 <h2 class="text-headline-md text-primary font-bold sm:hidden">SecureAuth</h2>
             </div>
             <div class="flex items-center gap-xs">
-                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
-                    <span class="material-symbols-outlined">dark_mode</span>
+                <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode" aria-label="Toggle dark mode">
+                    <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
                 </button>
                 <a href="{{ route('profile') }}" wire:navigate class="text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105">
                     <span class="material-symbols-outlined">settings</span>
@@ -111,11 +96,6 @@
                         <span class="material-symbols-outlined">logout</span>
                     </button>
                 </form>
-                <div class="sm:ml-xs sm:pl-xs sm:border-l border-outline-variant/30">
-                    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold ring-2 ring-primary/20">
-                        {{ $initial }}
-                    </div>
-                </div>
             </div>
         </header>
 
@@ -145,15 +125,9 @@
                     @endforeach
                 </nav>
                 <div class="mt-auto pt-lg border-t border-outline-variant/30 space-y-sm">
-                    <div class="flex items-center gap-sm px-sm mb-sm">
-                        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold ring-2 ring-primary/20">
-                            {{ $initial }}
-                        </div>
-                        <span class="text-label-sm text-on-surface">{{ $user->name ?? 'User' }}</span>
-                        <button onclick="toggleTheme()" class="theme-toggle ml-auto text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
-                            <span class="material-symbols-outlined">dark_mode</span>
-                        </button>
-                    </div>
+                    <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode" aria-label="Toggle dark mode">
+                        <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
+                    </button>
                     <form method="POST" action="/logout">
                         @csrf
                         <button type="submit" class="w-full flex items-center gap-sm px-sm py-xs rounded-xl transition-all duration-200 text-label-sm font-label-sm text-on-surface-variant hover:bg-error-container/30 hover:text-error group">

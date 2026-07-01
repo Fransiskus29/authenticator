@@ -69,8 +69,8 @@
     </div>
 
     <div class="absolute top-4 right-4 z-10">
-        <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode">
-            <span class="material-symbols-outlined">dark_mode</span>
+        <button onclick="toggleTheme()" class="theme-toggle text-on-surface-variant hover:bg-surface-container-low/80 rounded-full p-2 transition-all duration-300 hover:scale-105" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
         </button>
     </div>
 
