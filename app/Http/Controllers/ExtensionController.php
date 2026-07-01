@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use \RecursiveDirectoryIterator;
+use \RecursiveIteratorIterator;
 use ZipArchive;
 
 class ExtensionController extends Controller
 {
-    public function download()
+    public function download(Request $request)
     {
         $extensionPath = base_path('extension');
         $zipName = 'secureauth-extension.zip';
